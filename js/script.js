@@ -95,3 +95,29 @@ window.addEventListener('DOMContentLoaded', function () {
     });
 
 });
+
+class Options {
+    constructor(height, width, bg, fontSize, textAlign) {
+        this.height = height;
+        this.width = width;
+        this.bg = bg;
+        this.fontSize = fontSize;
+        this.textAlign = textAlign;
+    }
+    createElem() {
+        let div = document.createElement('div');
+        let cont = document.querySelector('.main');
+        cont.appendChild(div);
+        div.textContent = 'Hello';
+        div.style.height = this.height + 'px';
+        div.style.width = this.width + 'px';
+        div.style.backgroundColor = this.bg;
+        div.style.fontSize = this.fontSize + 'rem';
+        div.style.textAlign = this.textAlign;
+        return div;
+    }
+}
+
+const obj1 = new Options(100, 100, 'red', '1', 'left');
+
+obj1.createElem();
