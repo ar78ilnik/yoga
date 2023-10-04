@@ -36,7 +36,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     // Timer
 
-    let deadline = '2023-09-30';
+    let deadline = '2023-11-11';
 
     // Узнаем сколько времени между сейчас и deadline
 
@@ -94,30 +94,95 @@ window.addEventListener('DOMContentLoaded', function () {
         document.body.style.overflow = '';
     });
 
+    // Form
+
+    // Создаем объект состояний нашего запроса. Сейчас мы используем текстовый формат оповещения, но в дальнейшем это могут быть картинки и т.д.
+    let message = {
+        loading: 'Load...',
+        succes: 'Thank you, soon we contact you',
+        failure: 'Some tink was wrong...'
+    };
+
+    //Получаем элементы со страницы с которыми мы будем работать
+
+    let form = document.querySelector('.main-form'),
+        contactForm = document.querySelector('.contact-form'),
+        inputs = form.getElementsByTagName('input'),
+        statusMessage = document.createElement('div');
+
+    statusMessage.classList.add('status');
+
+    //Прописываем запрос. Обработчик вешаем на всю форму. Отслеживать нужно когда форма отправляется на сервер. Вешать на кнопку - ошибка.
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        // здесь мы должны оповестить пользователя как прошел наш запрос. Чтобы это вывести, нам нужно поместить один из элементов в нашу форму
+        form.appendChild(statusMessage);
+        // Создаем запрос
+        let request = new XMLHttpRequest();
+        // Настройка запроса (планируем идти в магазин)
+        request.open('POST', 'server.php');
+        // Настройка заголовков HTTP-запроса. Наш контент будет содержать данные, полученные из формы
+        request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        // Получаем данные, которые ввел пользователь. Используем встроенные объект formData. Чтобы правильно отправлять данные, нужно чтобы в input были поля name. Из этих атрибутов мы будем формировать ключ, а значение введет пользователь
+        let formData = new FormData(form);
+
+        // В случае, если необходимо отправить данные в формате json. И в отправке данных request.send(formData) (*) необходимо поменять на переменную json request.send(json);
+
+        let obj = {};
+        formData.forEach(function (value, key) {
+            obj[key] = value;
+        });
+        let json = JSON.stringify(obj);
+
+        //GET получает данные, а POST их отправляет. У POST-запросов есть body
+        /*--(*)--*/
+        request.send(formData);
+        request.addEventListener('readystatechange', function () {
+            if (request.readyState < 4) {
+                statusMessage.innerHTML = message.loading;
+            } else if (request.readyState === 4 && request.readyState === 200) {
+                statusMessage.innerHTML = message.succes;
+            } else {
+                statusMessage.innerHTML = message.failure;
+            }
+        });
+
+        for (let i = 0; i < inputs.length; i++) {
+            inputs[i].value = '';
+        }
+    });
+
+    /*--------------------------------------------------------*/
+
+    //Прописываем запрос. Обработчик вешаем на всю форму. Отслеживать нужно когда форма отправляется на сервер. Вешать на кнопку - ошибка.
+    contactForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+        // здесь мы должны оповестить пользователя как прошел наш запрос. Чтобы это вывести, нам нужно поместить один из элементов в нашу форму
+        form.appendChild(statusMessage);
+        // Создаем запрос
+        let request = new XMLHttpRequest();
+        // Настройка запроса (планируем идти в магазин)
+        request.open('POST', 'server.php');
+        // Настройка заголовков HTTP-запроса. Наш контент будет содержать данные, полученные из формы
+        request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        // Получаем данные, которые ввел пользователь. Используем встроенные объект formData. Чтобы правильно отправлять данные, нужно чтобы в input были поля name. Из этих атрибутов мы будем формировать ключ, а значение введет пользователь
+        let formData = new FormData(form);
+
+
+        //GET получает данные, а POST их отправляет. У POST-запросов есть body
+        request.send(formData);
+        request.addEventListener('readystatechange', function () {
+            if (request.readyState < 4) {
+                statusMessage.innerHTML = message.loading;
+            } else if (request.readyState === 4 && request.readyState === 200) {
+                statusMessage.innerHTML = message.succes;
+            } else {
+                statusMessage.innerHTML = message.failure;
+            }
+        });
+
+        for (let i = 0; i < inputs.length; i++) {
+            inputs[i].value = '';
+        }
+    });
 });
-
-class Options {
-    constructor(height, width, bg, fontSize, textAlign) {
-        this.height = height;
-        this.width = width;
-        this.bg = bg;
-        this.fontSize = fontSize;
-        this.textAlign = textAlign;
-    }
-    createElem() {
-        let div = document.createElement('div');
-        let cont = document.querySelector('.main');
-        cont.appendChild(div);
-        div.textContent = 'Hello';
-        div.style.height = this.height + 'px';
-        div.style.width = this.width + 'px';
-        div.style.backgroundColor = this.bg;
-        div.style.fontSize = this.fontSize + 'rem';
-        div.style.textAlign = this.textAlign;
-        return div;
-    }
-}
-
-const obj1 = new Options(100, 100, 'red', '1', 'left');
-
-obj1.createElem();
