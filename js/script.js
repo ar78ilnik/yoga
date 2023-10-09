@@ -105,7 +105,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     //Получаем элементы со страницы с которыми мы будем работать
 
-    let form = document.querySelector('.main-form'),
+    let formMain = document.querySelector('.main-form'),
         contactForm = document.querySelector('.contact-form'),
         inputs = form.getElementsByTagName('input'),
         statusMessage = document.createElement('div');
@@ -151,6 +151,41 @@ window.addEventListener('DOMContentLoaded', function () {
             inputs[i].value = '';
         }
     });
+
+    /*----------Переписываем отправку формы с помощью промисов--------------------------*/
+
+    formMain.addEventListener('submit', function (evt) {
+        evt.preventDefault();
+
+        console.log('done');
+        this.appendChild(statusMessage);
+
+        function sendFormData() {
+            return new Promise(function (resolve, reject) {
+                let request = new XMLHttpRequest(),
+                    formData = new FormData(formMain);
+
+                request.open('POST', 'server.php');
+                request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                request.send(formData);
+                request.addEventListener('readystatechange', function () {
+                    if (request.readyState < 4) {
+                        statusMessage.innerHTML = message.loading;
+                    } else if (request.readyState === 4 && request.readyState === 200) {
+                        resolve();
+                    } else {
+                        reject();
+                    }
+                });
+
+            });
+        }
+
+        sendFormData().then(statusMessage.innerHTML = message.succes).catch(statusMessage.innerHTML = message.failure);
+    });
+
+
+
 
     /*--------------------------------------------------------*/
 
